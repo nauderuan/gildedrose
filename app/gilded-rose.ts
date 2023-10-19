@@ -11,6 +11,7 @@ export class Item {
 }
 
 export class GildedRose {
+  static NORMAL_QUANTITY_DECREASE = 1;
   items: Array<Item>;
 
   constructor(items = [] as Array<Item>) {
@@ -20,12 +21,23 @@ export class GildedRose {
   updateQuality() {
     for (let i = 0; i < this.items.length; i++) {
       if (this.items[i].name != 'Aged Brie' && this.items[i].name != 'Backstage passes to a TAFKAL80ETC concert') {
+        // Handle the items that decrease in quality
         if (this.items[i].quality > 0) {
+          // Skip items that do not decrease or increase in value.
           if (this.items[i].name != 'Sulfuras, Hand of Ragnaros') {
-            this.items[i].quality = this.items[i].quality - 1
+            //Sticking with the != approach to keep the code consistent with the rest of the class
+            //Since the requirement was for Conjured items and not specifically Conjured Mana Cake we can use includes to handle all conjured items
+            if (!this.items[i].name?.toLocaleLowerCase().includes('conjured')) {
+              // Handle decreasing items with the normal amount
+              this.items[i].quality = this.items[i].quality - GildedRose.NORMAL_QUANTITY_DECREASE
+            } else {
+              // Handle decreasing items with double the normal amount
+              this.items[i].quality = this.items[i].quality - (GildedRose.NORMAL_QUANTITY_DECREASE * 2)
+            }
           }
         }
       } else {
+        // Handle the items that increase in value
         if (this.items[i].quality < 50) {
           this.items[i].quality = this.items[i].quality + 1
           if (this.items[i].name == 'Backstage passes to a TAFKAL80ETC concert') {
@@ -43,24 +55,44 @@ export class GildedRose {
         }
       }
       if (this.items[i].name != 'Sulfuras, Hand of Ragnaros') {
+        // Update sellIn for items that decrease or decrease in value
         this.items[i].sellIn = this.items[i].sellIn - 1;
       }
       if (this.items[i].sellIn < 0) {
+        // Here we handle items that have passed their sell by date
         if (this.items[i].name != 'Aged Brie') {
+          //Handle items that decrease in quality after sell by date
           if (this.items[i].name != 'Backstage passes to a TAFKAL80ETC concert') {
             if (this.items[i].quality > 0) {
+              // Skip items that do not decrease or increase in value after sell by date
               if (this.items[i].name != 'Sulfuras, Hand of Ragnaros') {
-                this.items[i].quality = this.items[i].quality - 1
+                //Sticking with the != approach to keep the code consistent with the rest of the class
+                //Since the requirement was for Conjured items and not specifically Conjured Mana Cake we can use includes to handle all conjured items
+                if (!this.items[i].name?.toLocaleLowerCase().includes('conjured')) {
+                  // Handle decreasing items twice as fast after sell by date with the normal amount
+                  // Here we just subtract the normal amount again since the above code would have already decrease it by the normal amount
+                  this.items[i].quality = this.items[i].quality - GildedRose.NORMAL_QUANTITY_DECREASE
+                } else {
+                  // Handle decreasing items twice as fast after sell by date with the normal amount * 2
+                  // Here we just subtract the normal*2 amount again since the above code would have already decrease it by the normal*2 amount
+                  this.items[i].quality = this.items[i].quality - (GildedRose.NORMAL_QUANTITY_DECREASE * 2)
+                }
               }
             }
           } else {
             this.items[i].quality = this.items[i].quality - this.items[i].quality
           }
         } else {
+          //Handle items that increase in quality after sell by date
           if (this.items[i].quality < 50) {
             this.items[i].quality = this.items[i].quality + 1
           }
         }
+      }
+
+      // No item's quality should ever be negative so we can do the safety check down here instead of duplicating code.
+      if (this.items[i].quality < 0) {
+        this.items[i].quality = 0;
       }
     }
 
