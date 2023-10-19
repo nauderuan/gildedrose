@@ -12,7 +12,8 @@ const items = [
 
   // Run just the new item to see that it decrease correctly while NOT pass sell by date
   // Also updated to be uneven number to test that it does not update quality to a negative value
-  new Item("Conjured Mana Cake", 3, 7)];
+  // Also increase the quality to test past sell by date
+  new Item("Conjured Mana Cake", 3, 17)];
 
 
 const gildedRose = new GildedRose(items);
