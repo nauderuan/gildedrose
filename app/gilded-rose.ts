@@ -11,6 +11,7 @@ export class Item {
 }
 
 export class GildedRose {
+  static NORMAL_QUANTITY_DECREASE = 1;
   items: Array<Item>;
 
   constructor(items = [] as Array<Item>) {
@@ -24,7 +25,16 @@ export class GildedRose {
         if (this.items[i].quality > 0) {
           // Skip items that do not decrease or increase in value.
           if (this.items[i].name != 'Sulfuras, Hand of Ragnaros') {
-            this.items[i].quality = this.items[i].quality - 1
+            //Sticking with the != approach to keep the code consistent with the rest of the class
+            if (this.items[i].name != 'Conjured Mana Cake') {
+              this.items[i].quality = this.items[i].quality - GildedRose.NORMAL_QUANTITY_DECREASE
+            } else {
+              this.items[i].quality = this.items[i].quality - (GildedRose.NORMAL_QUANTITY_DECREASE * 2)
+              // quality should never be negative and since we decrease with more that 1 we need a safety check here
+              if (this.items[i].quality < 0) {
+                this.items[i].quality = 0;
+              }
+            }
           }
         }
       } else {
@@ -57,7 +67,7 @@ export class GildedRose {
             if (this.items[i].quality > 0) {
               // Skip items that do not decrease or increase in value after sell by date
               if (this.items[i].name != 'Sulfuras, Hand of Ragnaros') {
-                this.items[i].quality = this.items[i].quality - 1
+                this.items[i].quality = this.items[i].quality - GildedRose.NORMAL_QUANTITY_DECREASE
               }
             }
           } else {
